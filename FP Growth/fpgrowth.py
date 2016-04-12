@@ -14,30 +14,69 @@ transactionBasedOnPriority = []
 class Node:
      def __init__(self, value):
         self.data = value
+        self.count = 0
         self.childs = []
+        self.parent = None
+
+    def addChild(self, node):
+        self.childs.append(node)
+
+    def insertTransaction(self, transactionString):
+        # Two case - 1. Root Node , 2. Other Node
+
+        # 1. Other Node
+        if self.value == "Root":
+            # Check if any of the child has the same value as the first value of the transaction
+            # If exists then increase its count and recursively call this function on the child node
+            for child in self.childs:
+                if child.value == transactionString[:1] :
+                    # Found a child with the same value
+                    # Increasing its count
+                    child.count += 1
+                    # Append the rest of the transaction to its child
+                    child.insertTransaction(transactionString[1:])
+                    return
+
+            # No child found, Make new nodes with the all the new transaction
+            childNode = Node(transactionString[:1])
+            self.childs.append(childNode)
+            childNode.insertTransaction(transactionString[1:])
+
+        else:
+            # The current node is not a root node
+            # Check value accordingly
+            if self.value == transactionString[:1] :
+                self.count +=1
+                # Check if further down, the string matches or not
+                for child in self.childs:
+                if child.value == transactionString[1:2] :
+                    # Found a child with the same value
+                    # Increasing its count
+                    child.count += 1
+                    # Append the rest of the transaction to its child
+                    child.insertTransaction(transactionString[1:])
+                    return
+                childNode = Node(transactionString[1:2])
+                childNode.parent = self
+                self.childs.append(childNode)
+                childNode.insertTransaction(transactionString[2:])
+            else:
+                parent = self.parent
+                childNode = Node(transactionString[:1])
+                childNode.parent = parent
+                parent.childs.append(childNode)
+                childNode.insertTransaction(transactionString[1:])
 
 class Tree:
-    def createNode(self, data):
-        return Node(data)
+    def __init__():
+        self.value = Node("Root")
 
-    def insert(self, node , data):
-        #if tree is empty , return a root node
-        if node is None:
-            return self.createNode(data)
-        # Else Add the child 
-            node.childs = self.insert(node.left, data)
-        return node
+    def updateWithTransaction(self, transactionString):
+        self.node.insertTransaction(transactionString)
 
 
-    def search(self, node, data):
-        if node is None or node.data == data:
-            return node
-
-        if node.data < data:
-            return self.search(node.right, data)
-        else:
-            return self.search(node.left, data)
-
+tree = Tree()
+tree.insert("abc")
 
 
 def comparePriority(x, y):
